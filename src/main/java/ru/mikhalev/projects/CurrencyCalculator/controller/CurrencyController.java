@@ -26,28 +26,36 @@ public class CurrencyController {
     private final CurrencyService currencyService;
 
     //здесь будет метод, в котором будут использоваться валюты из бд, которые являются актуальными
+    @GetMapping("/calculate")
+    public BigDecimal getAmount(
+            @RequestParam(value = "currentCurrency")
+            String currentCurrency,
+            @RequestParam("necessaryCurrency")
+            String necessaryCurrency,
+            @RequestParam(value = "amount")
+            BigDecimal amount) {
 
-    @GetMapping("/all")
-    public Map<String, Valute> getAllCurrencies() throws JsonProcessingException {
-        return currencyService.getAllArchiveValutes();
+        return currencyService.getAmount(currentCurrency, necessaryCurrency, amount);
+
     }
 
-    ///это будет использоваться для получения архивных валют по дате
-    @GetMapping()
-    public void getAmountInRubles(
+    /*@GetMapping("/calculate")
+    public void getAmount(
             @RequestParam(value = "date")
             LocalDate date,
+            @RequestParam(value = "currentCurrency")
+            String currentCurrency,
+            @RequestParam("necessaryCurrency")
+            String necessaryCurrency,
             @RequestParam(value = "amount")
-            BigDecimal amount,
-            @RequestParam(value = "charCode")
-            String charCode) {
-
-        RequestDTO requestDTO = RequestDTO.builder()
-                .date(date)
-                .amount(amount)
-                .charCode(charCode)
-                .build();
+            BigDecimal amount) {
 
 
+
+    }*/
+
+    @GetMapping("/all")
+    public Map<String, Valute> getAllCurrenciesByDate() throws JsonProcessingException {
+        return currencyService.getAllArchiveCurrencies();
     }
 }

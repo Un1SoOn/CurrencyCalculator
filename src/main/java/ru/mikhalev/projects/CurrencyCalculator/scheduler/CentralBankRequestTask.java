@@ -12,6 +12,7 @@ import ru.mikhalev.projects.CurrencyCalculator.mapper.CurrencyMapper;
 import ru.mikhalev.projects.CurrencyCalculator.repository.CurrencyRepository;
 import ru.mikhalev.projects.CurrencyCalculator.service.CurrencyService;
 
+import java.time.LocalDate;
 import java.util.Map;
 
 
@@ -31,6 +32,7 @@ public class CentralBankRequestTask {
 
     @Scheduled(cron = "0 0 12 * * ?", zone = "Europe/Moscow")
     public void sendRequestToTheCentralBank() throws JsonProcessingException {
+        log.info("A request to the central bank has been sent in: " + LocalDate.now());
         String jsonString = currencyService.sendRequestToTheCentralBank(URL);
         Map<String, Valute> mapWithValutes = mapReceivedData(jsonString);
         updateCurrenciesInDatabase(mapWithValutes);

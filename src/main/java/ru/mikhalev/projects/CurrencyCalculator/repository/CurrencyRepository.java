@@ -10,4 +10,5 @@ import ru.mikhalev.projects.CurrencyCalculator.entity.Currency;
 
 @Repository
 public interface CurrencyRepository extends JpaRepository<Currency, String> {
+    Currency getCurrencyByCharCode(String charCode);
 }
