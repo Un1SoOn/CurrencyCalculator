@@ -25,11 +25,14 @@ public class CurrencyController {
 
     private final CurrencyService currencyService;
 
+    //здесь будет метод, в котором будут использоваться валюты из бд, которые являются актуальными
+
     @GetMapping("/all")
     public Map<String, Valute> getAllCurrencies() throws JsonProcessingException {
-        return currencyService.getAllValutes();
+        return currencyService.getAllArchiveValutes();
     }
 
+    ///это будет использоваться для получения архивных валют по дате
     @GetMapping()
     public void getAmountInRubles(
             @RequestParam(value = "date")

@@ -26,7 +26,6 @@ public class Data {
     @JsonIgnore
     @JsonProperty("PreviousDate")
     private Date PreviousDate;
-
     @JsonIgnore
     @JsonProperty("PreviousURL")
     private String PreviousURL;

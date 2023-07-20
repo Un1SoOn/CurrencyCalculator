@@ -20,20 +20,21 @@ import java.util.Map;
 @Service
 @RequiredArgsConstructor
 public class CurrencyService {
-    @Value("${url.to.cb}")
-    private String URL;
+    @Value("${url.to.central.bank.archive}")
+    private String archiveURL;
     private final RestTemplate restTemplate= new RestTemplate();
 
-    public Map<String ,Valute> getAllValutes() throws JsonProcessingException {
-        String jsonString =  sendRequestTOCB();
-        return mapRequestedData(jsonString).getValute();
+    public Map<String ,Valute> getAllArchiveValutes() throws JsonProcessingException {
+        String jsonString =  sendRequestToTheCentralBank(archiveURL);
+        return mapReceivedData(jsonString).getValute();
     }
 
-    public String sendRequestTOCB() {
-        return restTemplate.getForObject(URL, String.class);
+    public String sendRequestToTheCentralBank(String URLToTheCentralBank) {
+        return restTemplate.getForObject(URLToTheCentralBank, String.class);
     }
 
-    public Data mapRequestedData(String jsonString) throws JsonProcessingException {
+
+    public Data mapReceivedData(String jsonString) throws JsonProcessingException {
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
         return objectMapper.readValue(jsonString, Data.class);

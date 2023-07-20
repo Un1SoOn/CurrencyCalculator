@@ -20,6 +20,10 @@ public class Valute {
 
     @JsonProperty("ID")
     private String id;
+    @JsonProperty("CharCode")
+    private String charCode;
+    @JsonProperty("Value")
+    private BigDecimal value;
     @JsonIgnore
     @JsonProperty("NumCode")
     private int NumCode;
@@ -32,8 +36,4 @@ public class Valute {
     @JsonIgnore
     @JsonProperty("Previous")
     private BigDecimal Previous;
-    @JsonProperty("CharCode")
-    private String charCode;
-    @JsonProperty("Value")
-    private BigDecimal value;
 }
