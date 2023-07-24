@@ -6,13 +6,10 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import ru.mikhalev.projects.CurrencyCalculator.dto.RequestDTO;
-import ru.mikhalev.projects.CurrencyCalculator.jsonClasses.Valute;
 import ru.mikhalev.projects.CurrencyCalculator.service.CurrencyService;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.util.Map;
 
 /**
  * @author Ivan Mikhalev
@@ -25,7 +22,6 @@ public class CurrencyController {
 
     private final CurrencyService currencyService;
 
-    //здесь будет метод, в котором будут использоваться валюты из бд, которые являются актуальными
     @GetMapping("/calculate")
     public BigDecimal getAmount(
             @RequestParam(value = "currentCurrency")
@@ -39,23 +35,23 @@ public class CurrencyController {
 
     }
 
-    /*@GetMapping("/calculate")
-    public void getAmount(
-            @RequestParam(value = "date")
-            LocalDate date,
+    @GetMapping("/calculate/archive")
+    public BigDecimal getAmount(
+            @RequestParam(value = "necessaryDate")
+            LocalDate necessaryDate,
             @RequestParam(value = "currentCurrency")
             String currentCurrency,
             @RequestParam("necessaryCurrency")
             String necessaryCurrency,
             @RequestParam(value = "amount")
-            BigDecimal amount) {
+            BigDecimal amount) throws JsonProcessingException {
+
+        return currencyService.getAmount(necessaryDate, currentCurrency, necessaryCurrency, amount);
+    }
 
 
-
-    }*/
-
-    @GetMapping("/all")
+    /*@GetMapping("/all")
     public Map<String, Valute> getAllCurrenciesByDate() throws JsonProcessingException {
         return currencyService.getAllArchiveCurrencies();
-    }
+    }*/
 }

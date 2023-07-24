@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
@@ -14,6 +15,7 @@ import ru.mikhalev.projects.CurrencyCalculator.repository.CurrencyRepository;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.time.LocalDate;
 import java.util.Map;
 
 
@@ -22,6 +24,7 @@ import java.util.Map;
  */
 
 @Service
+@Slf4j
 @RequiredArgsConstructor
 public class CurrencyService {
     @Value("${url.to.central.bank.archive}")
@@ -43,8 +46,39 @@ public class CurrencyService {
         return currentCurrencyValueFromDatabase.multiply(amount).divide(necessaryCurrencyValueFromDatabase, 2, RoundingMode.HALF_UP);
     }
 
-    public Map<String ,Valute> getAllArchiveCurrencies() throws JsonProcessingException {
-        String jsonString =  sendRequestToTheCentralBank(archiveURL);
+    public BigDecimal getAmount(LocalDate necessaryDate, String currentCurrency, String necessaryCurrency, BigDecimal amount) throws JsonProcessingException {
+        Map<String, Valute> archiveCurrencies = getAllArchiveCurrencies(necessaryDate);
+        BigDecimal necessaryCurrencyFromArchive = new BigDecimal(0);
+        BigDecimal currentCurrencyFromArchive = new BigDecimal(0);
+            while (necessaryCurrencyFromArchive.equals(BigDecimal.ZERO) & currentCurrencyFromArchive.equals(BigDecimal.ZERO)) {
+                for(Valute valute : archiveCurrencies.values()) {
+                    if (currentCurrency.equals("RUB")) {
+                        if(valute.getCharCode().equals(necessaryCurrency)) {
+                            return amount.divide(valute.getValue(),2,RoundingMode.HALF_UP);
+                        }
+                    } else if(necessaryCurrency.equals("RUB")) {
+                        if(valute.getCharCode().equals(currentCurrency)) {
+                            return valute.getValue().multiply(amount);
+                        }
+                    }
+
+                    if(valute.getCharCode().equals(necessaryCurrency)) {
+                        necessaryCurrencyFromArchive = valute.getValue();
+                    }
+                    if(valute.getCharCode().equals(currentCurrency)) {
+                        currentCurrencyFromArchive = valute.getValue();
+                    }
+                }
+            }
+            return currentCurrencyFromArchive.multiply(amount).divide(necessaryCurrencyFromArchive, 2, RoundingMode.HALF_UP);
+    }
+
+    public Map<String ,Valute> getAllArchiveCurrencies(LocalDate necessaryDate) throws JsonProcessingException {
+        if(necessaryDate.getMonthValue() < 10) {
+            String jsonString = sendRequestToTheCentralBank(String.format(archiveURL, necessaryDate.getYear(), "0" + necessaryDate.getMonthValue(), necessaryDate.getDayOfMonth()));
+            return mapReceivedData(jsonString).getValute();
+        }
+        String jsonString = sendRequestToTheCentralBank(String.format(archiveURL, necessaryDate.getYear(), necessaryDate.getMonthValue(), necessaryDate.getDayOfMonth()));
         return mapReceivedData(jsonString).getValute();
     }
 
