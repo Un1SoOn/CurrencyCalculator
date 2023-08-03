@@ -8,7 +8,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
-import ru.mikhalev.projects.CurrencyCalculator.entity.Currency;
+import ru.mikhalev.projects.CurrencyCalculator.exception.WrongRequestedCurrencyException;
 import ru.mikhalev.projects.CurrencyCalculator.jsonClasses.Data;
 import ru.mikhalev.projects.CurrencyCalculator.jsonClasses.Valute;
 import ru.mikhalev.projects.CurrencyCalculator.repository.CurrencyRepository;
@@ -21,6 +21,9 @@ import java.util.Map;
 
 /**
  * @author Ivan Mikhalev
+ *
+ * Сервис для рассчета курсов валют
+ *
  */
 
 @Service
@@ -48,6 +51,10 @@ public class CurrencyService {
 
     public BigDecimal getAmount(LocalDate necessaryDate, String currentCurrency, String necessaryCurrency, BigDecimal amount) throws JsonProcessingException {
         Map<String, Valute> archiveCurrencies = getAllArchiveCurrencies(necessaryDate);
+        if(!validateRequestedCurrencies(currentCurrency, necessaryCurrency, archiveCurrencies)) {
+            throw new WrongRequestedCurrencyException();
+        }
+
         BigDecimal necessaryCurrencyFromArchive = new BigDecimal(0);
         BigDecimal currentCurrencyFromArchive = new BigDecimal(0);
             while (necessaryCurrencyFromArchive.equals(BigDecimal.ZERO) & currentCurrencyFromArchive.equals(BigDecimal.ZERO)) {
@@ -71,6 +78,37 @@ public class CurrencyService {
                 }
             }
             return currentCurrencyFromArchive.multiply(amount).divide(necessaryCurrencyFromArchive, 2, RoundingMode.HALF_UP);
+    }
+
+    public boolean validateRequestedCurrencies(String currentCurrency, String necessaryCurrency, Map<String, Valute> archiveCurrencies) {
+        boolean currentCurrencyIsFound = false;
+        boolean necessaryCurrencyIsFound = false;
+
+        if(currentCurrency.equals("RUB"))
+            currentCurrencyIsFound = true;
+
+        if(necessaryCurrency.equals("RUB"))
+            necessaryCurrencyIsFound = true;
+
+        for(Valute valute : archiveCurrencies.values()) {
+            if(currentCurrencyIsFound) {
+                if(valute.getCharCode().equals(necessaryCurrency)) {
+                    necessaryCurrencyIsFound = true;
+                }
+            } else if(necessaryCurrencyIsFound) {
+                if(valute.getCharCode().equals(currentCurrency)) {
+                    currentCurrencyIsFound = true;
+                }
+            } else {
+                if(valute.getCharCode().equals(currentCurrency))
+                    currentCurrencyIsFound = true;
+
+                if(valute.getCharCode().equals(necessaryCurrency))
+                    necessaryCurrencyIsFound = true;
+            }
+        }
+
+        return currentCurrencyIsFound & necessaryCurrencyIsFound;
     }
 
     public Map<String ,Valute> getAllArchiveCurrencies(LocalDate necessaryDate) throws JsonProcessingException {

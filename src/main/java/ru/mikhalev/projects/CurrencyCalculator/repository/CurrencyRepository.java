@@ -6,6 +6,9 @@ import ru.mikhalev.projects.CurrencyCalculator.entity.Currency;
 
 /**
  * @author Ivan Mikhalev
+ *
+ * Репозиторий для получения валют из базы данных
+ *
  */
 
 @Repository

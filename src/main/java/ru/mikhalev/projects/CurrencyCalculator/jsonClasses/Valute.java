@@ -9,6 +9,9 @@ import java.math.BigDecimal;
 
 /**
  * @author Ivan Mikhalev
+ *
+ * Класс, содержащий в себе данные о полученных валютах.
+ *
  */
 
 @Data

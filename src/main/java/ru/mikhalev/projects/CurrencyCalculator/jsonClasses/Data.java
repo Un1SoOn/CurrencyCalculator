@@ -12,6 +12,9 @@ import java.util.Map;
 
 /**
  * @author Ivan Mikhalev
+ *
+ * Класс, использующийся для получения и парсинга ответа от ЦБ
+ *
  */
 
 @lombok.Data

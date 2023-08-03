@@ -8,6 +8,9 @@ import ru.mikhalev.projects.CurrencyCalculator.jsonClasses.Valute;
 
 /**
  * @author Ivan Mikhalev
+ *
+ * Маппер объектов класса Valute в объекты класса Currency
+ *
  */
 
 @Mapper(componentModel = "spring")
