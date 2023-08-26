@@ -5,6 +5,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.client.HttpClientErrorException;
 import ru.mikhalev.projects.CurrencyCalculator.exception.AmountLessThanZeroException;
 import ru.mikhalev.projects.CurrencyCalculator.exception.WrongRequestedCurrencyException;
@@ -24,6 +25,7 @@ import java.time.LocalDateTime;
 public class CurrencyControllerAdvice {
 
     @ExceptionHandler(HttpClientErrorException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ResponseEntity<ResponseMessage> httpClientErrorException(HttpClientErrorException ex) {
         log.error("Курс ЦБ РФ на данную дату не установлен или указана ошибочная дата.");
         ResponseMessage responseMessage = ResponseMessage
@@ -36,6 +38,7 @@ public class CurrencyControllerAdvice {
     }
 
     @ExceptionHandler(WrongRequestedCurrencyException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ResponseEntity<ResponseMessage> wrongRequestedCurrencyException(WrongRequestedCurrencyException ex) {
         log.error(ex.getMessage());
         ResponseMessage responseMessage = ResponseMessage
@@ -48,6 +51,7 @@ public class CurrencyControllerAdvice {
     }
 
     @ExceptionHandler(NullPointerException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ResponseEntity<ResponseMessage> nullPointerException(NullPointerException ex) {
         log.error("Requested currencies wasn't found in database");
         ResponseMessage responseMessage = ResponseMessage
@@ -60,6 +64,7 @@ public class CurrencyControllerAdvice {
     }
 
     @ExceptionHandler(AmountLessThanZeroException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ResponseEntity<ResponseMessage> amountLessThanZeroException(AmountLessThanZeroException ex) {
         log.error(ex.getMessage());
         ResponseMessage responseMessage = ResponseMessage
